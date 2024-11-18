@@ -4,7 +4,11 @@ use crate::entities::movie::{ActiveModel, Entity as Movie, Model};
 
 pub async fn find_all(db: DatabaseConnection) -> Vec<Model> {
 
-    let movies = Movie::find().all(&db).await.unwrap();
+    let mut movies = Movie::find().all(&db).await.unwrap();
+
+    if movies.len() == 0 {
+        movies = vec![];
+    }
     
     return movies;
 }
