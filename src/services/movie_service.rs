@@ -10,20 +10,21 @@ pub async fn get_movies(db: DatabaseConnection) -> Vec<MovieDto> {
     let response: Vec<MovieDto> = movies
         .iter()
         .map(|m| MovieDto {
-            id: m.0.id,
-            title: m.0.title.clone(),
-            originalTitle: m.0.original_title.clone(),
-            sypnosis: m.0.sypnosis.clone(),
-            image: m.0.image.clone(),
-            year: m.0.year,
-            duration: m.0.duration,
-            durationType: m.0.duration_type.clone(),
-            genres: m.1.iter().map(|g| g.name.clone()).collect(),
-            resolutionWidth: m.0.resolution_width,
-            resolutionHeight: m.0.resolution_height,
-            size: m.0.size,
-            sizeType: m.0.size_type.clone(),
-            format: m.0.format.clone(),
+            id: m.movie.id,
+            title: m.movie.title.clone(),
+            originalTitle: m.movie.original_title.clone(),
+            sypnosis: m.movie.sypnosis.clone(),
+            image: m.movie.image.clone(),
+            year: m.movie.year,
+            duration: m.movie.duration,
+            durationType: m.movie.duration_type.clone(),
+            genres: m.genres.iter().map(|g| g.name.clone()).collect(),
+            languages: m.languages.iter().map(|l| l.name.clone()).collect(),
+            resolutionWidth: m.movie.resolution_width,
+            resolutionHeight: m.movie.resolution_height,
+            size: m.movie.size,
+            sizeType: m.movie.size_type.clone(),
+            format: m.movie.format.clone(),
             
         })
         .collect();
