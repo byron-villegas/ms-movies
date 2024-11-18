@@ -3,6 +3,7 @@ use std::fs;
 use std::time::Duration;
 
 use actix_web::web;
+use cargo_metadata::MetadataCommand;
 use sea_orm::ConnectOptions;
 use sea_orm::Database;
 use sea_orm::DatabaseConnection;
@@ -23,13 +24,32 @@ pub struct Server {
     pub port: u16
 }
 
+pub struct Swagger {
+    pub title: String,
+    pub version: String
+}
+
 pub struct Configuration {
     pub server: Server,
+    pub swagger: Swagger,
     pub db: DatabaseConnection
 }
 
 impl Configuration {
     pub async fn init() -> Self {
+
+        const VERSION: &str = env!("CARGO_PKG_VERSION");
+
+        let path = std::env::var("CARGO_MANIFEST_DIR").unwrap();
+        let meta = MetadataCommand::new()
+            .manifest_path("./Cargo.toml")
+            .current_dir(&path)
+            .exec()
+            .unwrap();
+        
+        let root = meta.root_package().unwrap();
+        let rust_version = root.rust_version.clone().unwrap().to_string();
+        let actix_version = root.dependencies.iter().find(|d| d.name == "actix-web").take().unwrap().req.to_string();
 
         let mut host = "127.0.0.1".to_string();
     
@@ -81,6 +101,10 @@ impl Configuration {
                 path: "/api".to_string(),
                 port: 8000
             },
+            swagger: Swagger {
+                title: "ms-movies".to_string(),
+                version: VERSION.to_owned()
+            },
             db
         };
 
@@ -88,6 +112,10 @@ impl Configuration {
 
         let mut banner = fs::read_to_string("src/config/banner.txt").unwrap();
 
+        banner = banner.replace("package.name", &configuration.swagger.title);
+        banner = banner.replace("package.version", &configuration.swagger.version);
+        banner = banner.replace("rust.version", &rust_version);
+        banner = banner.replace("actix.version", &actix_version.replace("^", ""));
         banner = banner.replace("server.path", &configuration.server.path);
         banner = banner.replace("server.port", configuration.server.port.to_string().as_str());
         banner = banner.replace("log.level", &log_level.to_str().unwrap().replace("actix_web=", ""));
