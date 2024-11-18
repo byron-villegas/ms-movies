@@ -11,8 +11,8 @@ pub struct MovieDto {
     pub year: i16,
     pub duration: i16,
     pub durationType: String,
-    pub resolutionWidth: String,
-    pub resolutionHeight: String,
+    pub resolutionWidth: i16,
+    pub resolutionHeight: i16,
     pub size: f32,
     pub sizeType: String,
     pub format: String

@@ -12,8 +12,8 @@ pub struct Model {
     pub year: i16,
     pub duration: i16,
     pub duration_type: String,
-    pub resolution_width: String,
-    pub resolution_height: String,
+    pub resolution_width: i16,
+    pub resolution_height: i16,
     pub size: f32,
     pub size_type: String,
     pub format: String
