@@ -1,10 +1,10 @@
 use sea_orm::*;
 
-use crate::entities::movie::{ActiveModel, Entity as Movie, Model};
+use crate::entities::{genre::{self, Entity as Genre}, movie::{self, ActiveModel, Entity as Movie, Model}};
 
-pub async fn find_all(db: DatabaseConnection) -> Vec<Model> {
+pub async fn find_all(db: DatabaseConnection) -> Vec<(movie::Model, Vec<genre::Model>)> {
 
-    let mut movies = Movie::find().all(&db).await.unwrap();
+    let mut movies: Vec<(movie::Model, Vec<genre::Model>)> = Movie::find().find_with_related(Genre).all(&db).await.unwrap();
 
     if movies.len() == 0 {
         movies = vec![];

@@ -11,6 +11,7 @@ pub struct MovieDto {
     pub year: i16,
     pub duration: i16,
     pub durationType: String,
+    pub genres: Vec<String>,
     pub resolutionWidth: i16,
     pub resolutionHeight: i16,
     pub size: f32,
