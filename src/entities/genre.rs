@@ -1,36 +1,31 @@
 use sea_orm::{ActiveModelBehavior, DeriveEntityModel, DerivePrimaryKey, EntityTrait, EnumIter, PrimaryKeyTrait, Related, RelationDef, RelationTrait};
-
+   
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
-#[sea_orm(table_name = "movie_genre")]
+#[sea_orm(table_name = "genre")]
 pub struct Model {
     #[sea_orm(primary_key)]
-    #[sea_orm(column_name = "mgn_id")]
+    #[sea_orm(column_name = "gen_id")]
     pub id: i64,
-    #[sea_orm(column_name = "mov_id")]
-    pub movie_id: i64,
-    #[sea_orm(column_name = "mgn_name")]
+    #[sea_orm(column_name = "gen_name")]
     pub name: String
 }
 
 #[derive(Copy, Clone, Debug, EnumIter)]
 pub enum Relation {
-    Movie
+    MovieGenre
 }
 
 impl RelationTrait for Relation {
     fn def(&self) -> RelationDef {
         match self {
-            Self::Movie => Entity::belongs_to(super::movie::Entity)
-                .from(Column::MovieId)
-                .to(super::movie::Column::Id)
-                .into(),
+            Self::MovieGenre => Entity::has_many(super::movie_genre::Entity).into()
         }
     }
 }
 
-impl Related<super::movie::Entity> for Entity {
+impl Related<super::movie_genre::Entity> for Entity {
     fn to() -> RelationDef {
-        Relation::Movie.def()
+        Relation::MovieGenre.def()
     }
 }
 

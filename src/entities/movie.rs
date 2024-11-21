@@ -34,28 +34,28 @@ pub struct Model {
 
 #[derive(Copy, Clone, Debug, EnumIter)]
 pub enum Relation {
-    Genre,
-    Language
+    MovieGenre,
+    MovieLanguage
 }
 
 impl RelationTrait for Relation {
     fn def(&self) -> RelationDef {
         match self {
-            Self::Genre => Entity::has_many(super::genre::Entity).into(),
-            Self::Language => Entity::has_many(super::language::Entity).into()
+            Self::MovieGenre => Entity::has_many(super::movie_genre::Entity).into(),
+            Self::MovieLanguage => Entity::has_many(super::movie_language::Entity).into()
         }
     }
 }
 
-impl Related<super::genre::Entity> for Entity {
+impl Related<super::movie_genre::Entity> for Entity {
     fn to() -> RelationDef {
-        Relation::Genre.def()
+        Relation::MovieGenre.def()
     }
 }
 
-impl Related<super::language::Entity> for Entity {
+impl Related<super::movie_language::Entity> for Entity {
     fn to() -> RelationDef {
-        Relation::Language.def()
+        Relation::MovieLanguage.def()
     }
 }
 
