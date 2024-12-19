@@ -1,12 +1,11 @@
 use std::env;
 use std::fs;
-use std::time::Duration;
 
 use actix_web::web;
 use cargo_metadata::MetadataCommand;
-use sea_orm::ConnectOptions;
-use sea_orm::Database;
-use sea_orm::DatabaseConnection;
+use mongodb::options::ClientOptions;
+use mongodb::Client;
+use mongodb::Database;
 
 use crate::routes::health_route::health_checker_handler;
 use crate::routes::movie_route::{get_movies_handler, post_movies_handler};
@@ -29,10 +28,15 @@ pub struct Swagger {
     pub version: String
 }
 
+pub struct Cors {
+    pub allowed_origin: String
+}
+
 pub struct Configuration {
     pub server: Server,
     pub swagger: Swagger,
-    pub db: DatabaseConnection
+    pub db: Database,
+    pub cors: Cors
 }
 
 impl Configuration {
@@ -47,9 +51,21 @@ impl Configuration {
             .exec()
             .unwrap();
         
-        let root = meta.root_package().unwrap();
-        let rust_version = root.rust_version.clone().unwrap().to_string();
-        let actix_version = root.dependencies.iter().find(|d| d.name == "actix-web").take().unwrap().req.to_string();
+        let root = meta
+        .root_package()
+        .unwrap();
+
+        let rust_version = root.rust_version
+        .clone()
+        .unwrap()
+        .to_string();
+
+        let actix_version = root.dependencies
+        .iter()
+        .find(|dependency| dependency.name == "actix-web")
+        .take()
+        .unwrap()
+        .req.to_string();
 
         let mut host = "127.0.0.1".to_string();
     
@@ -61,40 +77,43 @@ impl Configuration {
             host = env::var("HOST").unwrap();
         }
 
-        let mut db_user = "".to_string();
-        let mut db_password = "".to_string();
-        let mut db_host = "".to_string();
-        let mut db_name = "".to_string();
+        let mut mongo_user = "".to_string();
+        let mut mongo_password = "".to_string();
+        let mut mongo_host = "".to_string();
+        let mut mongo_db = "".to_string();
 
-        if env::var("DB_USER").is_ok() {
-            db_user = env::var("DB_USER").unwrap();
+        if env::var("MONGO_USER").is_ok() {
+            mongo_user = env::var("MONGO_USER").unwrap();
         }
     
-        if env::var("DB_PASSWORD").is_ok() {
-            db_password = env::var("DB_PASSWORD").unwrap();
+        if env::var("MONGO_PASSWORD").is_ok() {
+            mongo_password = env::var("MONGO_PASSWORD").unwrap();
         }
     
-        if env::var("DB_HOST").is_ok() {
-            db_host = env::var("DB_HOST").unwrap();
+        if env::var("MONGO_HOST").is_ok() {
+            mongo_host = env::var("MONGO_HOST").unwrap();
         }
     
-        if env::var("DB_NAME").is_ok() {
-            db_name = env::var("DB_NAME").unwrap();
+        if env::var("MONGO_DB").is_ok() {
+            mongo_db = env::var("MONGO_DB").unwrap();
         }
-    
-        let mut opt = ConnectOptions::new(format!("postgres://{}:{}@{}/{}", db_user, db_password, db_host, db_name));
 
-        opt
-            .max_connections(10)
-            .min_connections(5)
-            .connect_timeout(Duration::from_secs(50))
-            .acquire_timeout(Duration::from_secs(50))
-            .idle_timeout(Duration::from_secs(50))
-            .max_lifetime(Duration::from_secs(30))
-            .set_schema_search_path("public");
+        let mongo_uri = format!("mongodb+srv://{0}:{1}@{2}", mongo_user, mongo_password, mongo_host);
     
-        let db = Database::connect(opt).await.unwrap();
-        
+        let client_options = ClientOptions::parse(mongo_uri).await.unwrap();
+
+        // Create the MongoDB client
+        let client = Client::with_options(client_options).unwrap();
+    
+        // Get the database
+        let database = client.database(&mongo_db);
+
+        let mut allowed_origin = "".to_string();
+
+        if env::var("CORS_ORIGIN").is_ok() {
+            allowed_origin = env::var("CORS_ORIGIN").unwrap();
+        }
+
         let configuration = Configuration {
             server: Server {
                 host: host,
@@ -105,7 +124,10 @@ impl Configuration {
                 title: "ms-movies".to_string(),
                 version: VERSION.to_owned()
             },
-            db
+            db: database,
+            cors: Cors {
+                allowed_origin: allowed_origin
+            }
         };
 
         let log_level = env::var_os("RUST_LOG").unwrap();

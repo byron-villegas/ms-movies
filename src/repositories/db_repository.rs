@@ -1,6 +1,5 @@
+use mongodb::Database;
 
-use sea_orm::DatabaseConnection;
-
-pub async fn check(db: DatabaseConnection) -> bool {
-    return db.ping().await.is_ok();
+pub async fn check(db: Database) -> bool {
+    return !db.name().is_empty();
 }

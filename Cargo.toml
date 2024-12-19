@@ -1,22 +1,23 @@
 [package]
 name = "ms-movies"
-description = "Aplicacion con rust y actix para servicios rest de peliculas"
+description = "Microservicio para las peliculas"
 version = "1.0.0"
 authors = ["Byron Villegas Moya"]
 keywords = ["rust", "actix", "rest", "api"]
 edition = "2021"
 rust-version = "1.81.0"
-repository = "https://github.com/byron-villegas/rust-actix"
+repository = "https://github.com/byron-villegas/ms-movies"
 readme = "README.md"
 license-file = "LICENSE.txt"
 
 [dependencies]
+bson = { version = "2", features = ["chrono-0_4"] }
 actix-cors = "0.7.0"
 actix-web = "4.9.0"
 cargo_metadata = "0.18.1"
 dotenv = "0.15.0"
 env_logger = "0.11.5"
-sea-orm =  { version = "1.1.1", features = ["sqlx-postgres", "runtime-async-std-native-tls"] }
+mongodb = "3.1.1"
 serde = { version = "1.0.210", features = ["derive"] }
 serde_json = "1.0.128"
 sysinfo = "0.31.4"

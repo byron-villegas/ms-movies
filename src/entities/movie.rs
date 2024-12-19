@@ -1,62 +1,27 @@
-use sea_orm::{ActiveModelBehavior, DeriveEntityModel, DerivePrimaryKey, EntityTrait, EnumIter, PrimaryKeyTrait, Related, RelationDef, RelationTrait};
+use bson::oid::ObjectId;
+use serde::{Deserialize, Serialize};
    
-#[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
-#[sea_orm(table_name = "movie")]
-pub struct Model {
-    #[sea_orm(primary_key)]
-    #[sea_orm(column_name = "mov_id")]
-    pub id: i64,
-    #[sea_orm(column_name = "mov_title")]
+#[derive(Serialize, Deserialize, Debug)]
+pub struct Movie {
+    #[serde(rename = "_id", skip_serializing_if = "Option::is_none")]
+    pub id: Option<ObjectId>,
     pub title: String,
-    #[sea_orm(column_name = "mov_original_title")]
+    #[serde(alias = "originalTitle")]
     pub original_title: String,
-    #[sea_orm(column_name = "mov_sypnosis")]
     pub sypnosis: String,
-    #[sea_orm(column_name = "mov_image")]
     pub image: String,
-    #[sea_orm(column_name = "mov_year")]
     pub year: i16,
-    #[sea_orm(column_name = "mov_duration")]
     pub duration: i16,
-    #[sea_orm(column_name = "mov_duration_type")]
+    #[serde(alias = "durationType")]
     pub duration_type: String,
-    #[sea_orm(column_name = "mov_resolution_width")]
+    pub genres: Vec<String>,
+    pub languages: Vec<String>,
+    #[serde(alias = "resolutionWidth")]
     pub resolution_width: i16,
-    #[sea_orm(column_name = "mov_resolution_height")]
+    #[serde(alias = "resolutionHeight")]
     pub resolution_height: i16,
-    #[sea_orm(column_name = "mov_size")]
     pub size: f32,
-    #[sea_orm(column_name = "mov_size_type")]
+    #[serde(alias = "sizeType")]
     pub size_type: String,
-    #[sea_orm(column_name = "mov_format")]
     pub format: String
 }
-
-#[derive(Copy, Clone, Debug, EnumIter)]
-pub enum Relation {
-    MovieGenre,
-    MovieLanguage
-}
-
-impl RelationTrait for Relation {
-    fn def(&self) -> RelationDef {
-        match self {
-            Self::MovieGenre => Entity::has_many(super::movie_genre::Entity).into(),
-            Self::MovieLanguage => Entity::has_many(super::movie_language::Entity).into()
-        }
-    }
-}
-
-impl Related<super::movie_genre::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::MovieGenre.def()
-    }
-}
-
-impl Related<super::movie_language::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::MovieLanguage.def()
-    }
-}
-
-impl ActiveModelBehavior for ActiveModel {}
