@@ -139,7 +139,11 @@ impl Configuration {
 
         let log_level = env::var_os("RUST_LOG").unwrap();
 
-        let mut banner = fs::read_to_string("api/config/banner.txt").unwrap();
+        let mut banner = "".to_string();
+
+        if fs::read_to_string("api/config/banner.txt").is_ok() {
+            banner = fs::read_to_string("api/config/banner.txt").unwrap();
+        }
 
         banner = banner.replace("package.name", &configuration.swagger.title);
         banner = banner.replace("package.version", &configuration.swagger.version);
