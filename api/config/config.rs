@@ -45,6 +45,9 @@ impl Configuration {
         const VERSION: &str = env!("CARGO_PKG_VERSION");
 
         let path = std::env::var("CARGO_MANIFEST_DIR").unwrap();
+
+        print!("{}", path);
+
         let meta = MetadataCommand::new()
             .manifest_path("./Cargo.toml")
             .current_dir(&path)
