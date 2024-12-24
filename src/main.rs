@@ -23,7 +23,7 @@ pub struct AppState {
 }
 
 #[actix_web::main]
-async fn main() -> std::io::Result<()> {
+pub async fn main() -> std::io::Result<()> {
     dotenv::dotenv().ok();
     
     let configuration = Configuration::init().await;

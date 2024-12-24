@@ -1,5 +1,5 @@
-
+#[path = "../src/main.rs"] mod principal;
 
 fn main() {
-    print!("Hello, world!");
+    principal::main();
 }
