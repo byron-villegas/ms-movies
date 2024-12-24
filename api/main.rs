@@ -1,4 +1,4 @@
-#[path = "../src/main.rs"] mod principal;
+#[path = "../src/main.rs"] use principal;
 
 fn main() {
     principal::main();
