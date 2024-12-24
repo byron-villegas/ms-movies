@@ -44,31 +44,35 @@ impl Configuration {
 
         const VERSION: &str = env!("CARGO_PKG_VERSION");
 
-        let path = std::env::var("CARGO_MANIFEST_DIR").unwrap();
+        let mut rust_version = "".to_string();
+        let mut actix_version = "".to_string();
 
-        print!("{}", path);
+        if std::env::var("CARGO_MANIFEST_DIR").is_ok() {
+            let path = std::env::var("CARGO_MANIFEST_DIR").unwrap();
 
-        let meta = MetadataCommand::new()
-            .manifest_path("./Cargo.toml")
-            .current_dir(&path)
-            .exec()
+            let meta = MetadataCommand::new()
+                .manifest_path("./Cargo.toml")
+                .current_dir(&path)
+                .exec()
+                .unwrap();
+            
+            let root = meta
+            .root_package()
             .unwrap();
-        
-        let root = meta
-        .root_package()
-        .unwrap();
 
-        let rust_version = root.rust_version
-        .clone()
-        .unwrap()
-        .to_string();
+            rust_version = root.rust_version
+            .clone()
+            .unwrap()
+            .to_string();
 
-        let actix_version = root.dependencies
-        .iter()
-        .find(|dependency| dependency.name == "actix-web")
-        .take()
-        .unwrap()
-        .req.to_string();
+            actix_version = root.dependencies
+            .iter()
+            .find(|dependency| dependency.name == "actix-web")
+            .take()
+            .unwrap()
+            .req
+            .to_string();
+        }
 
         let mut host = "127.0.0.1".to_string();
     
