@@ -24,4 +24,4 @@ sysinfo = "0.31.4"
 
 [[bin]]
 name = "main"
-path = "src/main.rs"
+path = "api/main.rs"
