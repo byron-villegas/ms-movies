@@ -7,7 +7,7 @@
     "routes": [
         {
             "src": "/(.*)",
-            "dest": "/api/main.rs"
+            "dest": "/src/main.rs"
         }
     ]
 }
