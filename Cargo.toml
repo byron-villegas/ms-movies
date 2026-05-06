@@ -24,9 +24,5 @@ sysinfo = "0.31.4"
 vercel_runtime = { version = "2" }
 
 [[bin]]
-name = "main"
-path = "api/main.rs"
-
-[[config]]
-name = "main"
+name = "config"
 path = "api/main.rs"
