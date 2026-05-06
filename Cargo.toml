@@ -26,3 +26,7 @@ vercel_runtime = { version = "2" }
 [[bin]]
 name = "main"
 path = "api/main.rs"
+
+[[config]]
+name = "main"
+path = "api/main.rs"
